@@ -1,13 +1,19 @@
-let gameDifficulty = 4;
-const gameNumbers = [8,0,4,4,16,2,2,2,8,8,2,4,128,64,64,512];
+let gameDifficulty = 5;
+const gameNumbers = [];
+let previousGameNumbers = [];
+for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+    gameNumbers.push(0);
+}
+previousGameNumbers = [...gameNumbers];
+addNewNumberToGame();
 const bodyElement = document.querySelector("body")
 let bodyhtml = ``;
 gameNumbers.forEach((value,index) => {
     if(value === 0){
-        bodyhtml += `<div class = "number-square"></div>`;
+        bodyhtml += `<div class = "number-square"><p></p></div>`;
     }
     else{
-        bodyhtml += `<div class = "number-square">${value}</div>`;
+        bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
     }
     
     if(index > 0 && index % gameDifficulty === gameDifficulty-1){
@@ -17,6 +23,8 @@ gameNumbers.forEach((value,index) => {
 
 bodyElement.innerHTML = bodyhtml;
 bodyElement.addEventListener("keydown", (event) => {
+    previousGameNumbers = [...gameNumbers];
+    let isGameChanged = false;
     if(event.key === "ArrowDown"){
         moveDown();
     }
@@ -28,16 +36,24 @@ bodyElement.addEventListener("keydown", (event) => {
     }
     else if(event.key === "ArrowRight"){
         moveRight();
-        console.log(event.key);
+    }
+    for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+        if(gameNumbers[i] !== previousGameNumbers[i]){
+            isGameChanged = true;
+            break;
+        }
+    }
+    if(isGameChanged){
+        addNewNumberToGame();
     }
     
     bodyhtml = ``;
     gameNumbers.forEach((value,index) => {
         if(value === 0){
-            bodyhtml += `<div class = "number-square"> </div>`;
+            bodyhtml += `<div class = "number-square"><p></p></div>`;
         }
         else{
-            bodyhtml += `<div class = "number-square">${value}</div>`;
+            bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
         }
         if(index > 0 && index % gameDifficulty === gameDifficulty-1){
             bodyhtml += `<br>`;
@@ -132,5 +148,32 @@ function addNumbersInRow(row){
             i++;
         }
         
+    }
+}
+
+function addNewNumberToGame(){
+    const checked = [];
+    while(true){
+        if(checked.length === gameDifficulty * gameDifficulty){
+            break;
+        }
+        let index = Math.floor(Math.random() * gameDifficulty * gameDifficulty);
+        let isIndexChecked = false;
+        checked.forEach((value) => {
+            if(value === index){
+                isIndexChecked = true;
+                return;
+            }
+        });
+        if(isIndexChecked){
+            continue;
+        }
+        else if(gameNumbers[index] !== 0){
+            checked.push(index);
+        }
+        else{
+            gameNumbers[index] = Math.random() < 0.85 ? 2 : 4;
+            break;
+        }
     }
 }
