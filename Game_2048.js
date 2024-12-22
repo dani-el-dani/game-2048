@@ -1,6 +1,7 @@
-let gameDifficulty = 5;
+let gameDifficulty = 3;
 const gameNumbers = [];
 let previousGameNumbers = [];
+let isgameOver = false;
 for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
     gameNumbers.push(0);
 }
@@ -43,23 +44,29 @@ bodyElement.addEventListener("keydown", (event) => {
             break;
         }
     }
-    if(isGameChanged){
+    
+    if(isGameChanged & !isgameOver){
         addNewNumberToGame();
+        checkIfGameOver();
+        bodyhtml = ``;
+        gameNumbers.forEach((value,index) => {
+            if(value === 0){
+                bodyhtml += `<div class = "number-square"><p></p></div>`;
+            }
+            else{
+                bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
+            }
+
+            if(index > 0 && index % gameDifficulty === gameDifficulty-1){
+                bodyhtml += `<br>`;
+            }
+        });
+        bodyElement.innerHTML = bodyhtml;
+        if(isgameOver){
+            console.log("Game Over!!")
+        }
     }
     
-    bodyhtml = ``;
-    gameNumbers.forEach((value,index) => {
-        if(value === 0){
-            bodyhtml += `<div class = "number-square"><p></p></div>`;
-        }
-        else{
-            bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
-        }
-        if(index > 0 && index % gameDifficulty === gameDifficulty-1){
-            bodyhtml += `<br>`;
-        }
-    });
-    bodyElement.innerHTML = bodyhtml;
     
 });
 
@@ -177,3 +184,34 @@ function addNewNumberToGame(){
         }
     }
 }
+function checkIfGameOver(){
+    const b = [...gameNumbers];
+    isgameOver = true;
+    for(let i = 0; i < 4; i++){
+        if(i === 0){
+            moveDown();
+        }
+        else if(i === 1){
+            moveUp();
+        }
+        else if(i === 2){
+            moveRight();
+        }
+        else{
+            moveLeft();
+        }
+        
+        for(let j = 0; j < gameDifficulty * gameDifficulty; j++){
+            if(gameNumbers[j] !== b[j]){
+                isgameOver = false;
+                break;
+            }
+        }
+        if(!isgameOver){
+            b.forEach((value, index) =>{
+                gameNumbers[index] = value;
+            });
+            break;
+        }
+    }
+ }
