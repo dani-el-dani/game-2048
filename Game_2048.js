@@ -2,6 +2,7 @@ let gameDifficulty = 3;
 const gameNumbers = [];
 let previousGameNumbers = [];
 let isgameOver = false;
+let score = 0;
 for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
     gameNumbers.push(0);
 }
@@ -21,7 +22,7 @@ gameNumbers.forEach((value,index) => {
         bodyhtml += `<br>`;
     }
 });
-
+bodyhtml += `<p>Score: ${score}</p>`;
 bodyElement.innerHTML = bodyhtml;
 bodyElement.addEventListener("keydown", (event) => {
     previousGameNumbers = [...gameNumbers];
@@ -61,10 +62,11 @@ bodyElement.addEventListener("keydown", (event) => {
                 bodyhtml += `<br>`;
             }
         });
-        bodyElement.innerHTML = bodyhtml;
+        bodyhtml += `<p>Score: ${score}</p>`;
         if(isgameOver){
-            console.log("Game Over!!")
+            bodyhtml += `<p>GAME OVER</p>`;
         }
+        bodyElement.innerHTML = bodyhtml;
     }
     
     
@@ -141,6 +143,7 @@ function addNumbersInRow(row){
         }
         else if(row[i] === row[j]){
             row[i] = row[i] + row[j];
+            score += row[i]; 
             row[j] = 0;
             i++;
         }
@@ -185,7 +188,8 @@ function addNewNumberToGame(){
     }
 }
 function checkIfGameOver(){
-    const b = [...gameNumbers];
+    const gameHolder = [...gameNumbers];
+    const scoreHolder = score;
     isgameOver = true;
     for(let i = 0; i < 4; i++){
         if(i === 0){
@@ -202,16 +206,17 @@ function checkIfGameOver(){
         }
         
         for(let j = 0; j < gameDifficulty * gameDifficulty; j++){
-            if(gameNumbers[j] !== b[j]){
+            if(gameNumbers[j] !== gameHolder[j]){
                 isgameOver = false;
                 break;
             }
         }
         if(!isgameOver){
-            b.forEach((value, index) =>{
+            gameHolder.forEach((value, index) =>{
                 gameNumbers[index] = value;
             });
             break;
         }
     }
+    score = scoreHolder;
  }
