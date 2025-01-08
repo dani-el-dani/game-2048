@@ -1,0 +1,109 @@
+p{
+    margin: 0;
+}
+.game-header{
+    width: 300px;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo-container{
+    width: 50px;
+}
+.buttons-container{
+    width: 100px;
+} 
+.game-buttons{
+    width:45px;
+}
+.scores-container{
+    display:flex;
+    flex: 1;
+    justify-content: space-around;
+    padding: 5px;
+}
+.play-area{
+    position: relative;
+    width:300px;
+    height:314px;
+    background-color: rgb(187, 173, 170);
+}
+.play-area-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
+    height: 300px;
+    column-gap: 1%;
+    row-gap: 1%;
+    padding: 7px;
+    font-size: 1.5vw;
+    font-weight: 700;
+    font-family: Arial, Helvetica, sans-serif;
+
+}
+.game-over{
+    position: absolute;
+    background-color:rgba(255,255,255,0.75);
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-items: center;
+    display: none;
+}
+.number-square{
+    align-content: center;
+    justify-items: center;
+    border-radius: 7px;
+}
+.number-text{
+    text-align: center;
+    align-content: center;
+    
+}
+.number-square-0{
+    background-color: rgba(238,228,218,0.35);
+}
+.number-square-2{
+    background-color: rgb(238,228,218);
+    color: black
+}
+.number-square-4{
+    background-color: rgb(237,224,200);
+    color: black;
+}
+.number-square-8{
+    background-color: rgb(242,177,121);
+    color: white;
+}
+.number-square-16{
+    background-color: rgb(245,149,99);
+    color: white;
+}
+.number-square-32{
+    background-color: rgb(246,124,95);
+    color: white;
+}
+.number-square-64{
+    background-color: rgb(246,95,59);
+    color: white;
+}
+.number-square-128{
+    background-color: rgb(237,207,114);
+    color: white;
+}
+.number-square-256{
+    background-color: rgb(237,204,97);
+    color: white;
+}
+.number-square-512{
+    background-color: rgb(237,200,80);
+    color: white;
+}
+.number-square-1024{
+    background-color: rgb(237,197,63);
+    color: white;
+}
+.number-square-2048{
+    background-color: rgb(255, 249, 10);
+}

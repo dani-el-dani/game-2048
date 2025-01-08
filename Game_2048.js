@@ -2,28 +2,32 @@ let gameDifficulty = 3;
 const gameNumbers = [];
 let previousGameNumbers = [];
 let isgameOver = false;
-let score = 0;
+let score = 100000;
 for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
     gameNumbers.push(0);
 }
 previousGameNumbers = [...gameNumbers];
 addNewNumberToGame();
 const bodyElement = document.querySelector("body")
+const playAreaGrid = document.querySelector(".js-play-area-grid");
+const gameOverPopUp = document.querySelector(".js-game-over");
+const scoreHtml = document.querySelector(".js-score");
+playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
+playAreaGrid.style.fontSize = `${6/gameDifficulty}vw`;
+
 let bodyhtml = ``;
 gameNumbers.forEach((value,index) => {
     if(value === 0){
-        bodyhtml += `<div class = "number-square"><p></p></div>`;
+        bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
     }
     else{
-        bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
+        bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
     }
     
-    if(index > 0 && index % gameDifficulty === gameDifficulty-1){
-        bodyhtml += `<br>`;
-    }
 });
-bodyhtml += `<p>Score: ${score}</p>`;
-bodyElement.innerHTML = bodyhtml;
+
+playAreaGrid.innerHTML = bodyhtml;
+
 bodyElement.addEventListener("keydown", (event) => {
     previousGameNumbers = [...gameNumbers];
     let isGameChanged = false;
@@ -52,21 +56,17 @@ bodyElement.addEventListener("keydown", (event) => {
         bodyhtml = ``;
         gameNumbers.forEach((value,index) => {
             if(value === 0){
-                bodyhtml += `<div class = "number-square"><p></p></div>`;
+                bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
             }
             else{
-                bodyhtml += `<div class = "number-square"><p>${value}</p></div>`;
-            }
-
-            if(index > 0 && index % gameDifficulty === gameDifficulty-1){
-                bodyhtml += `<br>`;
+                bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
             }
         });
-        bodyhtml += `<p>Score: ${score}</p>`;
         if(isgameOver){
-            bodyhtml += `<p>GAME OVER</p>`;
+            gameOverPopUp.style.display = "block";
         }
-        bodyElement.innerHTML = bodyhtml;
+        playAreaGrid.innerHTML = bodyhtml;
+        scoreHtml.innerHTML = score;
     }
     
     
