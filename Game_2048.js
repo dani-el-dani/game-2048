@@ -1,76 +1,111 @@
-let gameDifficulty = 3;
+let gameDifficulty;
 const gameNumbers = [];
-let previousGameNumbers = [];
-let isgameOver = false;
-let score = 100000;
-for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
-    gameNumbers.push(0);
-}
-previousGameNumbers = [...gameNumbers];
-addNewNumberToGame();
+let previousGameNumbers;
+let previousScore;
+let isgameOver;
+let score;
+let bodyhtml;
 const bodyElement = document.querySelector("body")
 const playAreaGrid = document.querySelector(".js-play-area-grid");
 const gameOverPopUp = document.querySelector(".js-game-over");
 const scoreHtml = document.querySelector(".js-score");
+const restartButton = document.querySelector(".js-restart-button");
+const undotButton = document.querySelector(".js-undo-button");
 playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
 playAreaGrid.style.fontSize = `${6/gameDifficulty}vw`;
 
-let bodyhtml = ``;
-gameNumbers.forEach((value,index) => {
-    if(value === 0){
-        bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
-    }
-    else{
-        bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
-    }
-    
-});
+gameDifficulty = 3;
+for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+    gameNumbers.push(0);
+}
 
-playAreaGrid.innerHTML = bodyhtml;
+function reStartGame(){
+
+    previousGameNumbers = [];
+    isgameOver = false;
+    score = 0;
+    previousScore = score;
+    gameNumbers.forEach((value,index)=>{
+        gameNumbers[index] = 0;
+    })
+    previousGameNumbers = [...gameNumbers];
+    addNewNumberToGame();
+
+    updatePlayArea();
+    scoreHtml.innerHTML = score;
+    gameOverPopUp.style.display = "none";
+}
+
+reStartGame();
 
 bodyElement.addEventListener("keydown", (event) => {
-    previousGameNumbers = [...gameNumbers];
-    let isGameChanged = false;
-    if(event.key === "ArrowDown"){
-        moveDown();
-    }
-    else if(event.key === "ArrowUp"){
-        moveUp();
-    }
-    else if(event.key === "ArrowLeft"){
-        moveLeft();
-    }
-    else if(event.key === "ArrowRight"){
-        moveRight();
-    }
-    for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
-        if(gameNumbers[i] !== previousGameNumbers[i]){
-            isGameChanged = true;
-            break;
+    if(!isgameOver){
+        previousGameNumbers = [...gameNumbers];
+        previousScore = score;
+        let isGameChanged = false;
+        if(event.key === "ArrowDown"){
+            moveDown();
+        }
+        else if(event.key === "ArrowUp"){
+            moveUp();
+        }
+        else if(event.key === "ArrowLeft"){
+            moveLeft();
+        }
+        else if(event.key === "ArrowRight"){
+            moveRight();
+        }
+    
+        for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+            if(gameNumbers[i] !== previousGameNumbers[i]){
+                isGameChanged = true;
+                break;
+            }
+        }
+        
+        if(isGameChanged){
+            addNewNumberToGame();
+            checkIfGameOver();
+            updatePlayArea();
+            scoreHtml.innerHTML = score;
+            if(isgameOver){
+                gameOverPopUp.style.display = "block";
+            }      
         }
     }
-    
-    if(isGameChanged & !isgameOver){
-        addNewNumberToGame();
-        checkIfGameOver();
-        bodyhtml = ``;
-        gameNumbers.forEach((value,index) => {
-            if(value === 0){
-                bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
-            }
-            else{
-                bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
-            }
-        });
-        if(isgameOver){
-            gameOverPopUp.style.display = "block";
-        }
-        playAreaGrid.innerHTML = bodyhtml;
-        scoreHtml.innerHTML = score;
-    }
-    
-    
+        
 });
+
+restartButton.addEventListener('click', () =>{
+    reStartGame();
+})
+undotButton.addEventListener('click', ()=>{
+    previousGameNumbers.forEach((value,index) =>{
+        gameNumbers[index] = value;
+    });
+    score = previousScore;
+    if(isgameOver){
+        gameOverPopUp.style.display = "none";
+        isgameOver = false;
+    }
+    updatePlayArea();
+    scoreHtml.innerHTML = score;
+});
+
+function updatePlayArea(){
+    bodyhtml = ``;
+    gameNumbers.forEach((value,index) => {
+        if(value === 0){
+            bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
+        }
+        else{
+            bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
+        }
+        
+    });
+    playAreaGrid.innerHTML = bodyhtml;
+}
+
 
 function moveLeft(){
     for(let i = 0; i < gameDifficulty; i++){
@@ -128,31 +163,45 @@ function addNumbersInRow(row){
     let i = 0;
     let j = i + 1;
     while(i < row.length - 1){
+        // finding the next non-empty cell.
         while(row[j] === 0){
             j++;
             if(j === row.length){
                 break;
             }
         }
+
+        //if there is no non-empty cell we stop.
         if(j === row.length){
             break;
         }
+
+        //if the current cell is empty we bring the next non empty cell to the current cell.
         if(row[i] === 0){
             row[i] = row[j];
             row[j] = 0;
         }
+
+        // if the current cell and the next non-empty cell are equal we add them together 
+        // and put it in the currrent cell and the next non-empty cell becomes empty.
         else if(row[i] === row[j]){
             row[i] = row[i] + row[j];
             score += row[i]; 
             row[j] = 0;
             i++;
         }
+
+        // if the current cell and the next non-empty cell are not equal and there is an empty cell between them,
+        // we bring the next non-empty cell next to the current cell.
         else if(j > i+1){
             row[i+1] = row[j];
             row[j] = 0;
             j++;
             i++;
         }
+        // if the current cell and the next non-empty cell are not equal and they are next to each other,
+        // we don't do nothing.
+
         else{
             j++;
             i++;
