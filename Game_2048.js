@@ -5,22 +5,39 @@ let previousScore;
 let isgameOver;
 let score;
 let bodyhtml;
+
+gameDifficulty = 4;
+const savedHighScores = JSON.parse(localStorage.getItem("high scores")) || [];
+let levelHighScore;
+
 const bodyElement = document.querySelector("body")
 const playAreaGrid = document.querySelector(".js-play-area-grid");
 const gameOverPopUp = document.querySelector(".js-game-over");
 const scoreHtml = document.querySelector(".js-score");
+const highScoreHtml = document.querySelector(".js-high-score");
 const restartButton = document.querySelector(".js-restart-button");
 const undotButton = document.querySelector(".js-undo-button");
 playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
 playAreaGrid.style.fontSize = `${6/gameDifficulty}vw`;
 
-gameDifficulty = 3;
+
+// initializing game array
 for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
     gameNumbers.push(0);
 }
 
 function reStartGame(){
-
+    savedHighScores.forEach((element) =>{
+        if(element.gameDifficulty === gameDifficulty){
+            levelHighScore = element;
+        }
+    });
+    
+    if(!levelHighScore){
+        levelHighScore = {'gameDifficulty' : gameDifficulty, 'highScore': 0};
+        savedHighScores.push(levelHighScore);
+        localStorage.setItem("high scores", JSON.stringify(savedHighScores));
+    }
     previousGameNumbers = [];
     isgameOver = false;
     score = 0;
@@ -28,11 +45,12 @@ function reStartGame(){
     gameNumbers.forEach((value,index)=>{
         gameNumbers[index] = 0;
     })
-    previousGameNumbers = [...gameNumbers];
+    
     addNewNumberToGame();
-
+    previousGameNumbers = [...gameNumbers];
     updatePlayArea();
     scoreHtml.innerHTML = score;
+    highScoreHtml.innerHTML = levelHighScore.highScore;
     gameOverPopUp.style.display = "none";
 }
 
@@ -54,6 +72,18 @@ bodyElement.addEventListener("keydown", (event) => {
         }
         else if(event.key === "ArrowRight"){
             moveRight();
+        }
+
+        if(score > levelHighScore.highScore){
+            levelHighScore.highScore = score;
+            savedHighScores.forEach((element) =>{
+                if(element.gameDifficulty = gameDifficulty){
+                    element.highScore = score;
+                }
+            });
+            localStorage.setItem("high scores", JSON.stringify(savedHighScores));
+            highScoreHtml.innerHTML = levelHighScore.highScore;
+
         }
     
         for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
