@@ -1,12 +1,12 @@
 let gameDifficulty;
-const gameNumbers = [];
-let previousGameNumbers;
+let gameNumbers = [];
+let undoGameNumbers;
 let previousScore;
+let isGameStarted = false;
 let isgameOver;
 let score;
 let bodyhtml;
 
-gameDifficulty = 4;
 const savedHighScores = JSON.parse(localStorage.getItem("high scores")) || [];
 let levelHighScore;
 
@@ -17,28 +17,52 @@ const scoreHtml = document.querySelector(".js-score");
 const highScoreHtml = document.querySelector(".js-high-score");
 const restartButton = document.querySelector(".js-restart-button");
 const undotButton = document.querySelector(".js-undo-button");
-playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
-playAreaGrid.style.fontSize = `${6/gameDifficulty}vw`;
+const menuButton = document.querySelector(".js-menu-button");
+const gameDifficultyButtons = document.querySelectorAll(".js-difficulty-buttons");
+
+
+menuButton.addEventListener(('click'), () => {
+    isGameStarted = false;
+    gameNumbers = [];
+    scoreHtml.innerHTML = 0;
+    highScoreHtml.innerHTML = 0;
+    document.querySelector(".js-game-menu").style.display = "block";
+    
+})
+gameDifficultyButtons.forEach((button) => {
+    button.addEventListener(('click') , () => {
+        gameDifficulty = Number(button.dataset.gameDifficulty);
+        playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
+        playAreaGrid.style.fontSize = `${75/gameDifficulty}px`;
+        for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+            gameNumbers.push(0);
+        }
+        reStartGame();
+        document.querySelector(".js-game-menu").style.display = "none"
+    })
+})
+
+
+
 
 
 // initializing game array
-for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
-    gameNumbers.push(0);
-}
+
 
 function reStartGame(){
+    isGameStarted = true;
+    levelHighScore = null;
     savedHighScores.forEach((element) =>{
         if(element.gameDifficulty === gameDifficulty){
             levelHighScore = element;
         }
     });
-    
     if(!levelHighScore){
         levelHighScore = {'gameDifficulty' : gameDifficulty, 'highScore': 0};
         savedHighScores.push(levelHighScore);
         localStorage.setItem("high scores", JSON.stringify(savedHighScores));
     }
-    previousGameNumbers = [];
+    undoGameNumbers = [];
     isgameOver = false;
     score = 0;
     previousScore = score;
@@ -47,79 +71,89 @@ function reStartGame(){
     })
     
     addNewNumberToGame();
-    previousGameNumbers = [...gameNumbers];
+    undoGameNumbers = [...gameNumbers];
     updatePlayArea();
     scoreHtml.innerHTML = score;
     highScoreHtml.innerHTML = levelHighScore.highScore;
     gameOverPopUp.style.display = "none";
 }
 
-reStartGame();
+
 
 bodyElement.addEventListener("keydown", (event) => {
-    if(!isgameOver){
-        previousGameNumbers = [...gameNumbers];
-        previousScore = score;
-        let isGameChanged = false;
-        if(event.key === "ArrowDown"){
-            moveDown();
-        }
-        else if(event.key === "ArrowUp"){
-            moveUp();
-        }
-        else if(event.key === "ArrowLeft"){
-            moveLeft();
-        }
-        else if(event.key === "ArrowRight"){
-            moveRight();
-        }
-
-        if(score > levelHighScore.highScore){
-            levelHighScore.highScore = score;
-            savedHighScores.forEach((element) =>{
-                if(element.gameDifficulty = gameDifficulty){
-                    element.highScore = score;
-                }
-            });
-            localStorage.setItem("high scores", JSON.stringify(savedHighScores));
-            highScoreHtml.innerHTML = levelHighScore.highScore;
-
-        }
-    
-        for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
-            if(gameNumbers[i] !== previousGameNumbers[i]){
-                isGameChanged = true;
-                break;
+    if(isGameStarted){
+        let previousGameNumbers;
+        let isGameChanged;
+        if(!isgameOver){
+            previousGameNumbers = [...gameNumbers];
+            previousScore = score;
+            isGameChanged = false;
+            if(event.key === "ArrowDown"){
+                moveDown();
             }
-        }
+            else if(event.key === "ArrowUp"){
+                moveUp();
+            }
+            else if(event.key === "ArrowLeft"){
+                moveLeft();
+            }
+            else if(event.key === "ArrowRight"){
+                moveRight();
+            }
+
+            if(score > levelHighScore.highScore){
+                levelHighScore.highScore = score;
+                savedHighScores.forEach((element) =>{
+                    if(element.gameDifficulty === gameDifficulty){
+                        element.highScore = score;
+                    }
+                });
+                localStorage.setItem("high scores", JSON.stringify(savedHighScores));
+                highScoreHtml.innerHTML = levelHighScore.highScore;
+
+            }
         
-        if(isGameChanged){
-            addNewNumberToGame();
-            checkIfGameOver();
-            updatePlayArea();
-            scoreHtml.innerHTML = score;
-            if(isgameOver){
-                gameOverPopUp.style.display = "block";
-            }      
+            for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+                if(gameNumbers[i] !== previousGameNumbers[i]){
+                    isGameChanged = true;
+                    break;
+                }
+            }
+            
+            if(isGameChanged){
+            undoGameNumbers = [...previousGameNumbers];
+                addNewNumberToGame();
+                checkIfGameOver();
+                updatePlayArea();
+                scoreHtml.innerHTML = score;
+                if(isgameOver){
+                    gameOverPopUp.style.display = "block";
+                }      
+            }
         }
     }
         
 });
 
 restartButton.addEventListener('click', () =>{
-    reStartGame();
+    if(isGameStarted){
+        reStartGame();
+    }   
 })
 undotButton.addEventListener('click', ()=>{
-    previousGameNumbers.forEach((value,index) =>{
-        gameNumbers[index] = value;
-    });
-    score = previousScore;
-    if(isgameOver){
-        gameOverPopUp.style.display = "none";
-        isgameOver = false;
+    if(isGameStarted){
+        undoGameNumbers.forEach((value,index) =>{
+            gameNumbers[index] = value;
+        });
+        score = previousScore;
+        if(isgameOver){
+            gameOverPopUp.style.display = "none";
+            isgameOver = false;
+        }
+        updatePlayArea();
+        scoreHtml.innerHTML = score;
     }
-    updatePlayArea();
-    scoreHtml.innerHTML = score;
+    
 });
 
 function updatePlayArea(){
@@ -128,8 +162,11 @@ function updatePlayArea(){
         if(value === 0){
             bodyhtml += `<div class="number-square number-square-0"><p class="number-text"></p></div>`;
         }
-        else{
+        else if(value < 4096){
             bodyhtml += `<div class = "number-square number-square-${value}"><p class = "number-text">${value}</p></div>`;
+        }
+        else{
+            bodyhtml += `<div class = "number-square number-square-4096"><p class = "number-text">${value}</p></div>`;
         }
         
     });

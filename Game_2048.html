@@ -5,39 +5,55 @@
         <link rel="stylesheet" href="./Game_2048.css">
     </head>
     <body>
-        <div class="game-header">
-            <div class="logo-container">
-                2048
-            </div>
-            <div class="scores-container">
-                <div class="score">
-                    <p>Score:</p>
-                    <p class="js-score">0</p>
+        <div class="container">
+            <div class="game-header">
+                <div class="logo-container">
+                    <button class="js-menu-button game-buttons"><img src="./icons/bars-solid.svg"></button>
                 </div>
-                <div class="score">
-                    <p>HighScore:</p>
-                    <p class="js-high-score">0</p>
+                <div class="scores-container">
+                    <div class="score">
+                        <p>Score:</p>
+                        <p class="js-score">0</p>
+                    </div>
+                    <div class="score">
+                        <p>HighScore:</p>
+                        <p class="js-high-score">0</p>
+                    </div>
+                </div>
+                <div class="buttons-container">
+                    <button class="game-buttons js-undo-button">
+                        <img src="./icons/rotate-left-solid.svg">
+                    </button>
+                    <button class="game-buttons js-restart-button">
+                        <img src="./icons/rotate-solid.svg" >
+                    </button>
                 </div>
             </div>
-            <div class="buttons-container">
-                <button class="game-buttons js-undo-button">
-                    <img src="./icons/rotate-left-solid.svg">
-                </button>
-                <button class="game-buttons js-restart-button">
-                    <img src="./icons/rotate-solid.svg" >
-                </button>
+            <div class="play-area">
+                <div class="game-over js-game-over">
+                    <p>Game Over</p> 
+                </div>
+                <div class="game-menu js-game-menu">
+                    <div class="menu-button-container">
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="3">3X3</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="4">4X4</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="5">5X5</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="6">6X6</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="7">7X7</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="8">8X8</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="9">9X9</button>
+                        <button class="dificulty-buttons js-difficulty-buttons" data-game-difficulty="10">10X10</button>
+                    </div>
+                    
+                </div>
+                <div class="play-area-grid js-play-area-grid">
+                      
+                </div>
+                
+    
             </div>
         </div>
-        <div class="play-area">
-            <div class="game-over js-game-over">
-                <p>Game Over</p> 
-            </div>
-            <div class="play-area-grid js-play-area-grid">
-                  
-            </div>
-            
-
-        </div>
+        
         <script src="./Game_2048.js"></script>
     </body>
 </html>

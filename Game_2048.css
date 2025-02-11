@@ -1,26 +1,31 @@
 p{
     margin: 0;
 }
+.container{
+    justify-items: center;
+}
 .game-header{
     width: 400px;
     height: 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: rgb(203, 203, 203);
+    background-color: rgb(237,207,114);
     margin-bottom: 3px;
 }
 .logo-container{
     width: 50px;
+    margin-left: 3px;
 }
 .buttons-container{
     width: 100px;
+    padding: 3px;
 } 
 .game-buttons{
     width: 48px;
     height: 45px;
     border: none;
-    background-color: gray;
+    background-color: rgb(202, 175, 97);
     border-radius: 5px;
     outline: none;
 }
@@ -31,7 +36,7 @@ p{
     padding: 2px;
 }
 .score{
-    background-color: gray;
+    background-color: rgba(202,175,97);
     padding: 5px;
     border-radius: 2px;
 }
@@ -62,6 +67,30 @@ p{
     align-content: center;
     justify-items: center;
     display: none;
+}
+.game-menu{
+    display: block;
+    position: absolute;
+    background-color:rgb(187, 173, 170);
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-items: center;
+}
+.menu-button-container{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    
+}
+.dificulty-buttons{
+    width :50%;
+    height:40px;
+    margin: 2px;
+    
 }
 .number-square{
     align-content: center;
@@ -118,4 +147,9 @@ p{
 }
 .number-square-2048{
     background-color: rgb(255, 249, 10);
+    color: white;
+}
+.number-square-4096{
+    background-color: black;
+    color: white;
 }
