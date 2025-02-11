@@ -4,6 +4,7 @@ let undoGameNumbers;
 let previousScore;
 let isGameStarted = false;
 let isgameOver;
+let isGameWin;
 let score;
 let bodyhtml;
 
@@ -15,10 +16,11 @@ const playAreaGrid = document.querySelector(".js-play-area-grid");
 const gameOverPopUp = document.querySelector(".js-game-over");
 const scoreHtml = document.querySelector(".js-score");
 const highScoreHtml = document.querySelector(".js-high-score");
-const restartButton = document.querySelector(".js-restart-button");
+const restartButton = document.querySelectorAll(".js-restart-button");
 const undotButton = document.querySelector(".js-undo-button");
 const menuButton = document.querySelector(".js-menu-button");
 const gameDifficultyButtons = document.querySelectorAll(".js-difficulty-buttons");
+const keepGoingButton = document.querySelector(".js-keep-going");
 
 
 menuButton.addEventListener(('click'), () => {
@@ -34,23 +36,14 @@ gameDifficultyButtons.forEach((button) => {
         gameDifficulty = Number(button.dataset.gameDifficulty);
         playAreaGrid.style.gridTemplateColumns = `repeat(${gameDifficulty}, 1fr)`;
         playAreaGrid.style.fontSize = `${75/gameDifficulty}px`;
-        for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
-            gameNumbers.push(0);
-        }
         reStartGame();
         document.querySelector(".js-game-menu").style.display = "none"
     })
 })
 
-
-
-
-
-// initializing game array
-
-
 function reStartGame(){
     isGameStarted = true;
+    isGameWin = {win: false, keepGoing: false};
     levelHighScore = null;
     savedHighScores.forEach((element) =>{
         if(element.gameDifficulty === gameDifficulty){
@@ -66,9 +59,7 @@ function reStartGame(){
     isgameOver = false;
     score = 0;
     previousScore = score;
-    gameNumbers.forEach((value,index)=>{
-        gameNumbers[index] = 0;
-    })
+    gameNumbers = Array(gameDifficulty * gameDifficulty).fill(0);
     
     addNewNumberToGame();
     undoGameNumbers = [...gameNumbers];
@@ -84,7 +75,7 @@ bodyElement.addEventListener("keydown", (event) => {
     if(isGameStarted){
         let previousGameNumbers;
         let isGameChanged;
-        if(!isgameOver){
+        if(!isgameOver && !isGameWin.win ){
             previousGameNumbers = [...gameNumbers];
             previousScore = score;
             isGameChanged = false;
@@ -121,24 +112,38 @@ bodyElement.addEventListener("keydown", (event) => {
             }
             
             if(isGameChanged){
-            undoGameNumbers = [...previousGameNumbers];
-                addNewNumberToGame();
-                checkIfGameOver();
-                updatePlayArea();
-                scoreHtml.innerHTML = score;
-                if(isgameOver){
-                    gameOverPopUp.style.display = "block";
-                }      
+                undoGameNumbers = [...previousGameNumbers];
+                if(!isGameWin.keepGoing){
+                    chaeckGameWin();
+                }
+                if(!isGameWin.win){
+                    addNewNumberToGame();
+                    checkIfGameOver();
+                    updatePlayArea();
+                    scoreHtml.innerHTML = score;
+                    if(isgameOver){
+                        gameOverPopUp.style.display = "block";
+                    }
+                }
+                else{
+                    updatePlayArea();
+                    scoreHtml.innerHTML = score;
+                    document.querySelector('.js-game-win').style.display = "block";
+                }                     
             }
         }
     }
         
 });
 
-restartButton.addEventListener('click', () =>{
-    if(isGameStarted){
-        reStartGame();
-    }   
+restartButton.forEach((button) => {
+    button.addEventListener('click', () =>{
+        if(isGameStarted){
+            reStartGame();
+        }
+          
+        document.querySelector('.js-game-win').style.display = "none"; 
+    })
 })
 undotButton.addEventListener('click', ()=>{
     if(isGameStarted){
@@ -153,8 +158,23 @@ undotButton.addEventListener('click', ()=>{
         updatePlayArea();
         scoreHtml.innerHTML = score;
     }
-    
+    isGameWin.win = false;
+    //isGameWin.keepGoing = true;
+    document.querySelector('.js-game-win').style.display = "none";
 });
+keepGoingButton.addEventListener('click', () =>{
+    isGameWin.win = false;
+    isGameWin.keepGoing = true;
+    addNewNumberToGame();
+    checkIfGameOver();
+    updatePlayArea();
+    scoreHtml.innerHTML = score;
+    if(isgameOver){
+        gameOverPopUp.style.display = "block";
+    }
+    document.querySelector('.js-game-win').style.display = "none";
+    
+})
 
 function updatePlayArea(){
     bodyhtml = ``;
@@ -298,7 +318,7 @@ function addNewNumberToGame(){
             checked.push(index);
         }
         else{
-            gameNumbers[index] = Math.random() < 0.85 ? 2 : 4;
+            gameNumbers[index] = Math.random() < 0.95 ? 2 : 4;
             break;
         }
     }
@@ -335,4 +355,11 @@ function checkIfGameOver(){
         }
     }
     score = scoreHolder;
- }
+}
+function chaeckGameWin(){
+    for(let i = 0; i < gameNumbers.length; i++){
+        if(gameNumbers[i] === 2048){
+            isGameWin.win = true;
+        }
+    }
+}
