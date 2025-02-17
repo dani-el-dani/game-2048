@@ -69,6 +69,102 @@ function reStartGame(){
     gameOverPopUp.style.display = "none";
 }
 
+let touchStartX;
+let touchStartY;
+let touchEndX;
+let touchEndY;
+
+bodyElement.addEventListener("touchstart", (event) => {
+    touchStartX = event.changedTouches[0].screenX;
+    touchStartY = event.changedTouches[0].screenY;
+})
+
+bodyElement.addEventListener("touchend", (event) => {
+    touchEndX = event.changedTouches[0].screenX;
+    touchEndY = event.changedTouches[0].screenY;
+    let key;
+
+    if(Math.abs(touchStartX - touchEndX) > Math.abs(touchStartY - touchEndY)){
+        if(touchStartX > touchEndX){
+            key = "ArrowLeft";
+        }
+        else{
+            key = "ArrowRight"
+        }
+    }
+    else{
+        if(touchStartY > touchEndY){
+            key = "ArrowUp";
+        }
+        else{
+            key = "ArrowDown"
+        }
+    }
+
+    if(isGameStarted){
+        let previousGameNumbers;
+        let isGameChanged;
+        if(!isgameOver && !isGameWin.win ){
+            previousGameNumbers = [...gameNumbers];
+            previousScore = score;
+            isGameChanged = false;
+            if(key === "ArrowDown"){
+                moveDown();
+            }
+            else if(key === "ArrowUp"){
+                moveUp();
+            }
+            else if(key === "ArrowLeft"){
+                moveLeft();
+            }
+            else if(key === "ArrowRight"){
+                moveRight();
+            }
+
+            if(score > levelHighScore.highScore){
+                levelHighScore.highScore = score;
+                savedHighScores.forEach((element) =>{
+                    if(element.gameDifficulty === gameDifficulty){
+                        element.highScore = score;
+                    }
+                });
+                localStorage.setItem("high scores", JSON.stringify(savedHighScores));
+                highScoreHtml.innerHTML = levelHighScore.highScore;
+
+            }
+        
+            for(let i = 0; i < gameDifficulty * gameDifficulty; i++){
+                if(gameNumbers[i] !== previousGameNumbers[i]){
+                    isGameChanged = true;
+                    break;
+                }
+            }
+            
+            if(isGameChanged){
+                undoGameNumbers = [...previousGameNumbers];
+                if(!isGameWin.keepGoing){
+                    chaeckGameWin();
+                }
+                if(!isGameWin.win){
+                    addNewNumberToGame();
+                    checkIfGameOver();
+                    updatePlayArea();
+                    scoreHtml.innerHTML = score;
+                    if(isgameOver){
+                        gameOverPopUp.style.display = "block";
+                    }
+                }
+                else{
+                    updatePlayArea();
+                    scoreHtml.innerHTML = score;
+                    document.querySelector('.js-game-win').style.display = "block";
+                }                     
+            }
+        }
+    }
+
+
+})
 
 
 bodyElement.addEventListener("keydown", (event) => {
